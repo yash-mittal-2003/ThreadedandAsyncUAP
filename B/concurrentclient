@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Check if the correct number of arguments are provided
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <hostname> <portnum> <input_file>"
+    exit 1
+fi
+
+# Assign variables
+HOSTNAME=$1
+PORT=$2
+INPUT_FILE=$3
+
+# Determine Python command (try python, fallback to python3 if python not found)
+if command -v python &>/dev/null; then
+    PYTHON_CMD="python"
+elif command -v python3 &>/dev/null; then
+    PYTHON_CMD="python3"
+else
+    echo "Neither python nor python3 is installed"
+    exit 1
+fi
+
+# Run two client scripts concurrently without logging output
+$PYTHON_CMD client.py "$HOSTNAME" "$PORT" < "$INPUT_FILE" &
+$PYTHON_CMD client.py "$HOSTNAME" "$PORT" < "$INPUT_FILE" &
+
+# Wait for both clients to finish
+wait
+
+echo "Both clients finished."

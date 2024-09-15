@@ -1,0 +1,30 @@
+#!/bin/bash
+# Check if at least two arguments (hostname and port) are provided
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <hostname> <portnum> [filename]"
+    exit 1
+fi
+
+# Assign variables
+HOSTNAME=$1
+PORT=$2
+FILENAME=$3
+
+# Determine Python command (try python, fallback to python3 if python not found)
+if command -v python &>/dev/null; then
+    PYTHON_CMD="python"
+elif command -v python3 &>/dev/null; then
+    PYTHON_CMD="python3"
+else
+    echo "Neither python nor python3 is installed"
+    exit 1
+fi
+
+# Execute the Python client script
+if [ -z "$FILENAME" ]; then
+    # No filename provided, run client without file redirection
+    $PYTHON_CMD client.py "$HOSTNAME" "$PORT"
+else
+    # Filename provided, redirect file content to client.py
+    $PYTHON_CMD client.py "$HOSTNAME" "$PORT" < "$FILENAME"
+fi

@@ -1,0 +1,29 @@
+#!/bin/bash
+# Check if the correct number of arguments are provided
+if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+    echo "Usage: $0 <portnum> [output_file]"
+    exit 1
+fi
+
+# Assign the port number
+PORT=$1
+
+# Determine Python command (try python, fallback to python3 if python not found)
+if command -v python &>/dev/null; then
+    PYTHON_CMD="python"
+elif command -v python3 &>/dev/null; then
+    PYTHON_CMD="python3"
+else
+    echo "Neither python nor python3 is installed"
+    exit 1
+fi
+
+# Check if an output file is provided
+if [ "$#" -eq 2 ]; then
+    OUTPUT_FILE=$2
+    # Run the Python server script and redirect the output to the specified file
+    $PYTHON_CMD server.py "$PORT" "$OUTPUT_FILE"
+else
+    # Run the Python server script and display the output in the console
+    $PYTHON_CMD server.py "$PORT"
+fi
